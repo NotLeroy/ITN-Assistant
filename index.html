@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fare Difference Calculator</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="calculator">
+        <h2>Fare Difference Calculator</h2>
+        <label for="airlineCode">Airline Code:</label>
+        <input type="text" id="airlineCode" placeholder="Enter airline code" />
+        <label for="newFare">New Fare:</label>
+        <textarea id="newFare" placeholder="Enter new fare details"></textarea>
+        <label for="oldFare">Old Fare:</label>
+        <textarea id="oldFare" placeholder="Enter old fare details"></textarea>
+        <button id="calculateButton">Calculate</button>
+      </div>
+      <div class="calculator">
+        <h2>Tax Refund Calculator</h2>
+        <label for="refundInput">Tax Refund Input:</label>
+        <textarea
+          id="refundInput"
+          placeholder="Enter tax refund details"
+        ></textarea>
+        <button id="refundButton">Calculate Refund</button>
+      </div>
+    </div>
+    <div id="results" class="results"></div>
+    <div id="confetti-container"></div>
+    <script src="script.js"></script>
+  </body>
+</html>
