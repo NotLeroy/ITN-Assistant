@@ -151,6 +151,11 @@ function FILTER_REFUNDABLE_TAXES(input) {
     "S1",
     "DW",
     "SC",
+    "NG",
+    "CA",
+    "IS",
+    "T1",
+    "ZU",
   ];
 
   if (!input || input.trim() === "") {
