@@ -438,8 +438,16 @@ document.addEventListener("DOMContentLoaded", () => {
           2
         )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
       });
-
+<
+      if (fareDifference < 0 && taxDifference > 0) {
+        totalFareDifference = taxDifference;
+      } else if (taxDifference < 0 && fareDifference > 0) {
+        totalFareDifference = fareDifference;
+      } else {
+        totalFareDifference = fareDifference + taxDifference;
+      }
       totalFareDifference = fareDifference + taxDifference;
+      
       yqyrTax = "";
     } else if (["QR", "RJ", "SK", "SV", "TK", "VA", "WS"].includes(airline)) {
       const yqyrOld = oldFareString.match(/(\d+\.\d+)(YQ|YR)/g);
