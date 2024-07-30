@@ -443,9 +443,8 @@ document.addEventListener("DOMContentLoaded", () => {
           2
         )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
       });
-<
+
       totalFareDifference = fareDifference + taxDifference;
-      
       yqyrTax = "";
     } else if (["QR", "RJ", "SK", "SV", "TK", "VA", "WS"].includes(airline)) {
       const yqyrOld = oldFareString.match(/(\d+\.\d+)(YQ|YR)/g);
