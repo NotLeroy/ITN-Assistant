@@ -439,13 +439,6 @@ document.addEventListener("DOMContentLoaded", () => {
         )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
       });
 <
-      if (fareDifference < 0 && taxDifference > 0) {
-        totalFareDifference = taxDifference;
-      } else if (taxDifference < 0 && fareDifference > 0) {
-        totalFareDifference = fareDifference;
-      } else {
-        totalFareDifference = fareDifference + taxDifference;
-      }
       totalFareDifference = fareDifference + taxDifference;
       
       yqyrTax = "";
