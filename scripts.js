@@ -1,37 +1,3 @@
-document.addEventListener("DOMContentLoaded", function () {
-  // Check if the user's name is already stored
-  let userName = localStorage.getItem("userName");
-  if (!userName) {
-    userName = prompt("What's your name?");
-    if (userName) {
-      localStorage.setItem("userName", userName);
-    }
-  }
-
-  // Establish a WebSocket connection to the server
-  const socket = new WebSocket("wss://itn-assistant.onrender.com/");
-
-  socket.addEventListener("open", function () {
-    // Send the user's name to the server
-    socket.send(JSON.stringify({ type: "newUser", name: userName }));
-  });
-
-  socket.addEventListener("message", function (event) {
-    const data = JSON.parse(event.data);
-    if (data.type === "userCount") {
-      // Update the user count display
-      document.getElementById("user-count").textContent = data.count;
-    }
-  });
-
-  // Log user actions (example)
-  document.addEventListener("click", function () {
-    socket.send(
-      JSON.stringify({ type: "userAction", action: "click", name: userName })
-    );
-  });
-});
-
 // JavaScript code for Tax Refund Calculator
 function calculateTaxRefund() {
   var input = document.getElementById("taxInput").value;
@@ -402,3 +368,37 @@ function extractYQYR(fareString) {
   var yqyrMatch = fareString.match(/(?:YQ|YR)(?:\d+\.\d+)?/i);
   return yqyrMatch ? parseFloat(yqyrMatch[0].replace(/YQ|YR/, "")) : 0;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Check if the user's name is already stored
+  let userName = localStorage.getItem("userName");
+  if (!userName) {
+    userName = prompt("What's your name?");
+    if (userName) {
+      localStorage.setItem("userName", userName);
+    }
+  }
+
+  // Establish a WebSocket connection to the server
+  const socket = new WebSocket("wss://itn-assistant.onrender.com/");
+
+  socket.addEventListener("open", function () {
+    // Send the user's name to the server
+    socket.send(JSON.stringify({ type: "newUser", name: userName }));
+  });
+
+  socket.addEventListener("message", function (event) {
+    const data = JSON.parse(event.data);
+    if (data.type === "userCount") {
+      // Update the user count display
+      document.getElementById("user-count").textContent = data.count;
+    }
+  });
+
+  // Log user actions (example)
+  document.addEventListener("click", function () {
+    socket.send(
+      JSON.stringify({ type: "userAction", action: "click", name: userName })
+    );
+  });
+});

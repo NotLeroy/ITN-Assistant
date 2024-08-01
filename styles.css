@@ -1,17 +1,4 @@
-body 
-font-family: Arial, sans-serif;
-}
-#user-counter {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #f0f0f0;
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-}
-
-{
+body {
   font-family: Arial, sans-serif;
   background: #f4f4f9;
   color: #333;
@@ -96,6 +83,34 @@ button:hover {
     transform: translateY(100vh) rotate(720deg);
     opacity: 1;
   }
+}
+
+body {
+  font-family: Arial, sans-serif;
+}
+#user-counter {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: #f0f0f0;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+#messages {
+  margin: 20px;
+}
+#message-list {
+  list-style: none;
+  padding: 0;
+}
+#message-input {
+  width: 80%;
+  padding: 10px;
+  margin-right: 10px;
+}
+#send-button {
+  padding: 10px 20px;
 }
 
 @keyframes rgb-glow {
