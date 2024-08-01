@@ -3,45 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Airline Tools</title>
+    <title>Fare Difference Calculator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>User Tracking Example</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="calculator-container">
-      <div id="taxCalculator" class="calculator-box">
-        <h2>Tax Refund Calculator</h2>
-        <textarea
-          id="taxInput"
-          placeholder="Enter tax information here..."
-        ></textarea>
-        <button onclick="calculateTaxRefund()">Calculate Refund</button>
-        <div id="taxResult"></div>
-      </div>
-
-      <div id="fareDifferenceCalculator" class="calculator-box">
+    <div class="container">
+      <div class="calculator">
         <h2>Fare Difference Calculator</h2>
-        <textarea
-          id="newFare"
-          placeholder="Enter new fare details..."
-        ></textarea>
-        <textarea
-          id="oldFare"
-          placeholder="Enter old fare details..."
-        ></textarea>
-        <input
-          type="text"
-          id="airlineCode"
-          placeholder="Enter airline code..."
-        />
-        <button id="calculateFare">Calculate Fare Difference</button>
-        <div id="results"></div>
+        <label for="airlineCode">Airline Code:</label>
+        <input type="text" id="airlineCode" placeholder="Enter airline code" />
+        <label for="newFare">New Fare:</label>
+        <textarea id="newFare" placeholder="Enter new fare details"></textarea>
+        <label for="oldFare">Old Fare:</label>
+        <textarea id="oldFare" placeholder="Enter old fare details"></textarea>
+        <button id="calculateButton">Calculate</button>
       </div>
-
-      <div id="taxBreakdown" class="calculator-box">
-        <!-- Tax Breakdown content will appear here -->
+      <div class="calculator">
+        <h2>Tax Refund Calculator</h2>
+        <label for="refundInput">Tax Refund Input:</label>
+        <textarea
+          id="refundInput"
+          placeholder="Enter tax refund details"
+        ></textarea>
+        <button id="refundButton">Calculate Refund</button>
       </div>
     </div>
-
+    <div id="results" class="results"></div>
+    <div id="confetti-container"></div>
+    <div id="user-counter">Active Users: <span id="user-count">0</span></div>
     <script src="scripts.js"></script>
   </body>
 </html>

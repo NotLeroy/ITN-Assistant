@@ -1,3 +1,37 @@
+document.addEventListener("DOMContentLoaded", function () {
+  // Check if the user's name is already stored
+  let userName = localStorage.getItem("userName");
+  if (!userName) {
+    userName = prompt("What's your name?");
+    if (userName) {
+      localStorage.setItem("userName", userName);
+    }
+  }
+
+  // Establish a WebSocket connection to the server
+  const socket = new WebSocket("wss://itn-assistant.onrender.com/");
+
+  socket.addEventListener("open", function () {
+    // Send the user's name to the server
+    socket.send(JSON.stringify({ type: "newUser", name: userName }));
+  });
+
+  socket.addEventListener("message", function (event) {
+    const data = JSON.parse(event.data);
+    if (data.type === "userCount") {
+      // Update the user count display
+      document.getElementById("user-count").textContent = data.count;
+    }
+  });
+
+  // Log user actions (example)
+  document.addEventListener("click", function () {
+    socket.send(
+      JSON.stringify({ type: "userAction", action: "click", name: userName })
+    );
+  });
+});
+
 // JavaScript code for Tax Refund Calculator
 function calculateTaxRefund() {
   var input = document.getElementById("taxInput").value;
@@ -179,345 +213,192 @@ function FILTER_REFUNDABLE_TAXES(input) {
   return result || "No valid taxes found.";
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  function extractTaxes(fareString) {
-    const taxPattern = /TAX\s(\d+\.\d+)(\w{2})/g;
-    let match;
-    const taxes = {};
-    while ((match = taxPattern.exec(fareString)) !== null) {
-      taxes[match[2]] = parseFloat(match[1]);
-    }
-    return taxes;
-  }
+// JavaScript code for Fare Difference Calculator
+function calculateFareDifference() {
+  var newFare = document.getElementById("newFare").value;
+  var oldFare = document.getElementById("oldFare").value;
+  var airlineCode = document.getElementById("airlineCode").value.toUpperCase();
 
-  function preprocessFareString(fareString) {
-    const taxRegex = /TAX\s+(\.\d+)/gi;
-    return fareString.replace(taxRegex, "TAX 0$1");
-  }
+  var result = calculateDifference(newFare, oldFare, airlineCode);
+  document.getElementById("fareResult").innerText = result;
+}
 
-  function extractCurrency(fareString) {
-    const currencyRegex = /(\b[A-Z]{3}\b)/g;
-    const matches = fareString.match(currencyRegex);
-    return matches ? matches : [];
-  }
+function calculateDifference(newFareString, oldFareString, airline) {
+  var newFareString = preprocessFareString(newFareString);
+  var oldFareString = preprocessFareString(oldFareString);
 
-  function extractFareAmount(fareString, currency) {
-    const fareAmountRegex = new RegExp("FARE " + currency + " (\\d+\\.\\d+)");
-    const match = fareString.match(fareAmountRegex);
-    if (match) return parseFloat(match[1]);
+  var newCurrency = extractCurrency(newFareString);
+  var oldCurrency = extractCurrency(oldFareString);
 
-    const equAmountRegex = new RegExp("EQU " + currency + " (\\d+\\.\\d+)");
-    const equMatch = fareString.match(equAmountRegex);
-    return equMatch ? parseFloat(equMatch[1]) : 0;
-  }
+  var newFareAmount = extractFareAmount(newFareString, newCurrency);
+  var oldFareAmount = extractFareAmount(oldFareString, oldCurrency);
 
-  function extractTotalFareAmount(fareString, currency) {
-    if (!fareString) return 0;
-    const cleanedFareString = fareString.replace(/\s+/g, " ");
-    const totalFareAmountRegex = new RegExp(
-      "TOT " + currency + " (\\d+\\.\\d+)"
-    );
-    const match = cleanedFareString.match(totalFareAmountRegex);
-    return match ? parseFloat(match[1]) : 0;
-  }
+  var newTotalFareAmount = extractTotalFareAmount(newFareString, newCurrency);
+  var oldTotalFareAmount = extractTotalFareAmount(oldFareString, oldCurrency);
 
-  function calculateFareDifference() {
-    const airline = document
-      .getElementById("airlineCode")
-      .value.trim()
-      .toUpperCase();
-    const newFareString = preprocessFareString(
-      document.getElementById("newFare").value
-    );
-    const oldFareString = preprocessFareString(
-      document.getElementById("oldFare").value
-    );
+  var fareDifference;
+  var taxDifference;
+  var totalFareDifference;
+  var yqyrTax;
 
-    const newCurrencies = extractCurrency(newFareString);
-    const oldCurrencies = extractCurrency(oldFareString);
+  if (
+    [
+      "4O",
+      "4Z",
+      "9U",
+      "A3",
+      "AD",
+      "AH",
+      "AI",
+      "AR",
+      "BA",
+      "AS",
+      "AT",
+      "BP",
+      "BW",
+      "CA",
+      "CX",
+      "CZ",
+      "DE",
+      "DY",
+      "EI",
+      "EY",
+      "G3",
+      "GA",
+      "GF",
+      "GP",
+      "GQ",
+      "HA",
+      "HR",
+      "HU",
+      "HX",
+      "IB",
+      "J2",
+      "JU",
+      "KM",
+      "KQ",
+      "LO",
+      "LQ",
+      "LY",
+      "MF",
+      "MH",
+      "MK",
+      "MS",
+      "MU",
+      "NH",
+      "NZ",
+      "OK",
+      "OU",
+      "PC",
+      "PG",
+      "PR",
+      "PS",
+      "PW",
+      "PX",
+      "QR",
+      "RO",
+      "S4",
+      "S7",
+      "SA",
+      "SN",
+      "SS",
+      "TG",
+      "TN",
+      "TS",
+      "TU",
+      "UA",
+      "UK",
+      "UL",
+      "UP",
+      "UX",
+      "VA",
+      "VN",
+      "VS",
+      "WY",
+      "XL",
+    ].includes(airline)
+  ) {
+    fareDifference = newFareAmount - oldFareAmount;
 
-    const newTotalCurrency = newCurrencies[newCurrencies.length - 1];
-    const oldTotalCurrency = oldCurrencies[oldCurrencies.length - 1];
+    var newTaxes = extractTaxes(newFareString);
+    var oldTaxes = extractTaxes(oldFareString);
+    taxDifference = 0;
 
-    const newFareAmount = extractFareAmount(newFareString, newTotalCurrency);
-    const oldFareAmount = extractFareAmount(oldFareString, oldTotalCurrency);
+    var uniqueTaxTypes = new Set([
+      ...Object.keys(newTaxes),
+      ...Object.keys(oldTaxes),
+    ]);
+    var taxCalculationDetails = "";
 
-    const newTotalFareAmount = extractTotalFareAmount(
-      newFareString,
-      newTotalCurrency
-    );
-    const oldTotalFareAmount = extractTotalFareAmount(
-      oldFareString,
-      oldTotalCurrency
-    );
-
-    let fareDifference;
-    let taxDifference;
-    let totalFareDifference;
-    let yqyrTax;
-    let taxCalculationDetails = "";
-
-    if (
-      [
-        "4O",
-        "4Z",
-        "9U",
-        "A3",
-        "AD",
-        "AH",
-        "AI",
-        "AR",
-        "BA",
-        "AS",
-        "AT",
-        "BP",
-        "BW",
-        "CA",
-        "CX",
-        "CZ",
-        "DE",
-        "DY",
-        "EI",
-        "EY",
-        "G3",
-        "GA",
-        "GF",
-        "GP",
-        "GQ",
-        "HA",
-        "HR",
-        "HU",
-        "HX",
-        "IB",
-        "J2",
-        "JU",
-        "KM",
-        "KQ",
-        "LO",
-        "LQ",
-        "LY",
-        "MF",
-        "MH",
-        "MK",
-        "MS",
-        "MU",
-        "NH",
-        "NZ",
-        "OK",
-        "OU",
-        "PC",
-        "PG",
-        "PR",
-        "PS",
-        "PW",
-        "PX",
-        "QR",
-        "RO",
-        "S4",
-        "S7",
-        "SA",
-        "SN",
-        "SS",
-        "TG",
-        "TN",
-        "TS",
-        "TU",
-        "UA",
-        "UK",
-        "UL",
-        "UP",
-        "UX",
-        "VA",
-        "VN",
-        "VS",
-        "WY",
-        "XL",
-      ].includes(airline)
-    ) {
-      fareDifference = newFareAmount - oldFareAmount;
-
-      const newTaxes = extractTaxes(newFareString);
-      const oldTaxes = extractTaxes(oldFareString);
-      taxDifference = 0;
-
-      const uniqueTaxTypes = new Set([
-        ...Object.keys(newTaxes),
-        ...Object.keys(oldTaxes),
-      ]);
-
-      uniqueTaxTypes.forEach((taxType) => {
-        const newTaxAmount = newTaxes[taxType] || 0;
-        const oldTaxAmount = oldTaxes[taxType] || 0;
-        const diff = newTaxAmount - oldTaxAmount;
-        taxDifference += diff;
-        taxCalculationDetails += `New TAX ${newTaxAmount.toFixed(
-          2
-        )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
-      });
-
-      if (fareDifference < 0 && taxDifference > 0) {
-        totalFareDifference = taxDifference;
-      } else if (taxDifference < 0 && fareDifference > 0) {
-        totalFareDifference = fareDifference;
-      } else {
-        totalFareDifference = fareDifference + taxDifference;
-      }
-
-      yqyrTax = "";
-    } else if (
-      [
-        "TK",
-        "AA",
-        "AM",
-        "AV",
-        "AY",
-        "B6",
-        "CM",
-        "DL",
-        "EK",
-        "ET",
-        "FI",
-        "FJ",
-        "JL",
-        "KE",
-        "LA",
-        "ME",
-        "OZ",
-        "QF",
-        "SK",
-        "SQ",
-        "SU",
-        "SV",
-        "WB",
-        "WS",
-      ].includes(airline)
-    ) {
-      fareDifference = newTotalFareAmount - oldTotalFareAmount;
-      taxDifference = 0;
-
-      totalFareDifference = fareDifference;
-      yqyrTax = "";
-      taxCalculationDetails = `<p>No tax breakdown due to calculation method Total - Total with ${newTotalCurrency}</p>`;
-    } else if (
-      [
-        "AC",
-        "AF",
-        "AZ",
-        "KL",
-        "LH",
-        "OS",
-        "RJ",
-        "TP",
-        "BR",
-        "CI",
-        "PU",
-      ].includes(airline)
-    ) {
-      fareDifference = newFareAmount - oldFareAmount;
-
-      const newTaxes = extractTaxes(newFareString);
-      const oldTaxes = extractTaxes(oldFareString);
-      taxDifference = 0;
-
-      const uniqueTaxTypes = new Set([
-        ...Object.keys(newTaxes),
-        ...Object.keys(oldTaxes),
-      ]);
-
-      uniqueTaxTypes.forEach((taxType) => {
-        const newTaxAmount = newTaxes[taxType] || 0;
-        const oldTaxAmount =
-          taxType === "YQ" || taxType === "YR"
-            ? oldTaxes[taxType] >= 50
-              ? oldTaxes[taxType]
-              : 0
-            : oldTaxes[taxType] || 0;
-        const diff = newTaxAmount - oldTaxAmount;
-        taxDifference += diff;
-        taxCalculationDetails += `New TAX ${newTaxAmount.toFixed(
-          2
-        )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
-      });
-
-      totalFareDifference = fareDifference + taxDifference;
-      yqyrTax = "";
-    } else if (["QR", "RJ", "SK", "SV", "TK", "VA", "WS"].includes(airline)) {
-      const yqyrOld = oldFareString.match(/(\d+\.\d+)(YQ|YR)/g);
-      const yqyrNew = newFareString.match(/(\d+\.\d+)(YQ|YR)/g);
-
-      let yqyrOldSum = 0;
-      let yqyrNewSum = 0;
-
-      if (yqyrOld) {
-        yqyrOld.forEach((tax) => {
-          yqyrOldSum += parseFloat(tax.match(/(\d+\.\d+)/)[0]);
-        });
-      }
-
-      if (yqyrNew) {
-        yqyrNew.forEach((tax) => {
-          yqyrNewSum += parseFloat(tax.match(/(\d+\.\d+)/)[0]);
-        });
-      }
-
-      if (yqyrOldSum < 50 && yqyrNewSum < 50) {
-        fareDifference = newFareAmount - oldFareAmount;
-        taxDifference =
-          newTotalFareAmount -
-          newFareAmount -
-          (oldTotalFareAmount - oldFareAmount);
-        totalFareDifference = fareDifference + taxDifference;
-        yqyrTax = "";
-        taxCalculationDetails = "";
-      } else {
-        fareDifference = newFareAmount - oldFareAmount;
-        taxDifference =
-          newTotalFareAmount -
-          newFareAmount -
-          (oldTotalFareAmount - oldFareAmount);
-        totalFareDifference = fareDifference + taxDifference - yqyrNewSum;
-        yqyrTax = `YQ/YR Adjustment: -${yqyrNewSum.toFixed(2)}`;
-        taxCalculationDetails = "";
-      }
-    } else {
-      fareDifference = newFareAmount - oldFareAmount;
-      taxDifference =
-        newTotalFareAmount -
-        newFareAmount -
-        (oldTotalFareAmount - oldFareAmount);
-      totalFareDifference = fareDifference + taxDifference;
-      yqyrTax = "";
-      taxCalculationDetails = `<p>No tax breakdown due to calculation method Total - Total with ${newTotalCurrency}</p>`;
-    }
-
-    let resultHTML = `
-      <p>Fare Difference: ${fareDifference.toFixed(2)}</p>
-      <p>Tax Difference: ${taxDifference.toFixed(2)}</p>
-      <p>Total Fare Difference: ${totalFareDifference.toFixed(2)}</p>
-      ${yqyrTax ? `<p>YQ/YR Tax Details: ${yqyrTax}</p>` : ""}
-  `;
-
-    const resultsDiv = document.getElementById("results");
-    if (resultsDiv) {
-      resultsDiv.innerHTML = resultHTML;
-    } else {
-      console.error('Element with ID "results" not found.');
-    }
-
-    const taxBreakdownDiv = document.getElementById("taxBreakdown");
-    if (taxBreakdownDiv) {
-      taxBreakdownDiv.innerHTML = taxCalculationDetails;
-    } else {
-      console.error('Element with ID "taxBreakdown" not found.');
-    }
-  }
-
-  const calculateFareButton = document.getElementById("calculateFare");
-  if (calculateFareButton) {
-    calculateFareButton.addEventListener("click", function () {
-      calculateFareDifference();
+    uniqueTaxTypes.forEach((taxType) => {
+      var newTaxAmount = newTaxes[taxType] || 0;
+      var oldTaxAmount = oldTaxes[taxType] || 0;
+      var diff = newTaxAmount - oldTaxAmount;
+      taxDifference += diff;
+      taxCalculationDetails += `[New TAX ${newTaxAmount.toFixed(
+        2
+      )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}]\n`;
     });
+
+    if (fareDifference < 0 && taxDifference > 0) {
+      totalFareDifference = taxDifference;
+    } else if (taxDifference < 0 && fareDifference > 0) {
+      totalFareDifference = fareDifference;
+    } else {
+      totalFareDifference = fareDifference - taxDifference;
+    }
+
+    yqyrTax = extractYQYR(newFareString);
+
+    return `Fare Difference: ${fareDifference.toFixed(
+      2
+    )}\nTaxes Difference:\n${taxCalculationDetails}TOTAL TAX DIFFERENCE: ${taxDifference.toFixed(
+      2
+    )}\nTOTAL FARE DIFFERENCE: ${totalFareDifference.toFixed(
+      2
+    )}\nYQYR TAX: ${yqyrTax.toFixed(2)}`;
   } else {
-    console.error('Element with ID "calculateFare" not found.');
+    return "No valid airline code found.";
   }
-});
+}
+
+// Helper functions
+function preprocessFareString(fareString) {
+  return fareString.replace(/\s+/g, " ").trim().toUpperCase();
+}
+
+function extractCurrency(fareString) {
+  return fareString.match(/(?:[A-Z]{3})/g)[0];
+}
+
+function extractFareAmount(fareString, currency) {
+  return parseFloat(
+    fareString
+      .match(new RegExp(`(?:${currency}\\d+\\.\\d+)`, "i"))[0]
+      .replace(currency, "")
+  );
+}
+
+function extractTotalFareAmount(fareString, currency) {
+  var totalAmount = fareString.match(new RegExp(`${currency}\\d+\\.\\d+`, "i"));
+  return totalAmount ? parseFloat(totalAmount[0].replace(currency, "")) : 0;
+}
+
+function extractTaxes(fareString) {
+  var taxes = {};
+  var taxMatches = fareString.match(/(?:[A-Z]{2,3})(?:\d+\.\d+)?/g);
+
+  if (taxMatches) {
+    taxMatches.forEach((tax) => {
+      var taxType = tax.match(/[A-Z]{2,3}/)[0];
+      var taxAmount = parseFloat(tax.match(/\d+\.\d+/)) || 0;
+      taxes[taxType] = (taxes[taxType] || 0) + taxAmount;
+    });
+  }
+  return taxes;
+}
+
+function extractYQYR(fareString) {
+  var yqyrMatch = fareString.match(/(?:YQ|YR)(?:\d+\.\d+)?/i);
+  return yqyrMatch ? parseFloat(yqyrMatch[0].replace(/YQ|YR/, "")) : 0;
+}

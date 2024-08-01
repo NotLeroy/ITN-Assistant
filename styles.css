@@ -1,66 +1,126 @@
-/* styles.css */
+body 
+font-family: Arial, sans-serif;
+}
+#user-counter {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #f0f0f0;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
 
-body {
-  background-color: #f9e2e1; /* Darker pastel pink background */
-  color: #333; /* Text color for better readability */
+{
   font-family: Arial, sans-serif;
+  background: #f4f4f9;
+  color: #333;
   margin: 0;
   padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  overflow-x: hidden;
 }
 
-.calculator-container {
+.container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  max-width: 1200px; /* Increased maximum width for bigger boxes */
-  width: 100%;
+  justify-content: space-around;
   padding: 20px;
 }
 
-.calculator-box {
-  background-color: #f4a6b0; /* Pastel pink background for boxes */
-  border-radius: 8px;
+.calculator {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  margin: 0 10px;
-  width: 100%; /* Make each box take up available space */
-  max-width: 350px; /* Increased width for each box */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-button {
-  background-color: #a8d9f4; /* Pastel blue buttons */
-  border: none;
-  color: #333;
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 16px;
-}
-
-button:hover {
-  background-color: #8cc4e3; /* Slightly darker pastel blue on hover */
+  width: 45%;
 }
 
 textarea,
-input[type="text"] {
-  width: calc(100% - 22px); /* Adjust width for padding and borders */
+input {
+  width: 100%;
   padding: 10px;
+  margin-bottom: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 16px;
-  margin-top: 10px;
 }
 
-textarea {
-  height: 100px; /* Increased height for better text entry */
+button {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
 }
 
-#taxBreakdown {
-  max-width: 400px; /* Increased width for the breakdown box */
-  flex-shrink: 0; /* Prevent shrinking */
+button:hover {
+  background: #0056b3;
+  transform: scale(1.05);
+}
+
+.results {
+  margin: 20px;
+  padding: 20px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.confetti {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #ff0;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1000;
+}
+
+.confetti:nth-child(odd) {
+  background: #f00;
+}
+
+.confetti:nth-child(3n) {
+  background: #0f0;
+}
+
+.confetti:nth-child(4n) {
+  background: #00f;
+}
+
+@keyframes confetti-fall {
+  from {
+    transform: translateY(-100vh) rotate(0deg);
+  }
+  to {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 1;
+  }
+}
+
+@keyframes rgb-glow {
+  0% {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000,
+      0 0 20px #ff0000, 0 0 25px #ff0000;
+  }
+  20% {
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00,
+      0 0 20px #00ff00, 0 0 25px #00ff00;
+  }
+  40% {
+    text-shadow: 0 0 5px #0000ff, 0 0 10px #0000ff, 0 0 15px #0000ff,
+      0 0 20px #0000ff, 0 0 25px #0000ff;
+  }
+  60% {
+    text-shadow: 0 0 5px #ff0000, 0 0 10px #ff0000, 0 0 15px #ff0000,
+      0 0 20px #ff0000, 0 0 25px #ff0000;
+  }
+  80% {
+    text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 15px #00ff00,
+      0 0 20px #00ff00, 0 0 25px #00ff00;
+  }
+  100% {
+    text-shadow: 0 0 5px #0000ff, 0 0 10px #0000ff, 0 0 15px #0000ff,
+      0 0 20px #0000ff, 0 0 25px #0000ff;
+  }
 }
