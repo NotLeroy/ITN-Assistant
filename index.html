@@ -4,9 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fare Difference Calculator</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>User Tracking</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -33,7 +30,13 @@
     </div>
     <div id="results" class="results"></div>
     <div id="confetti-container"></div>
-    <div id="user-counter">Active Users: <span id="user-count">0</span></div>
+
+    <!-- Added WebSocket Functionality -->
+    <div id="user-info">
+      <h3>Connected Users: <span id="user-count">0</span></h3>
+      <ul id="message-list"></ul>
+    </div>
+
     <script src="scripts.js"></script>
   </body>
 </html>

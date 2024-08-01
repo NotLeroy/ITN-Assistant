@@ -1,11 +1,16 @@
 {
-  "name": "websocket-server",
+  "name": "itn-assistant",
   "version": "1.0.0",
+  "description": "Fare Difference and Tax Refund Calculator with WebSocket integration",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "ws": "^7.4.0"
+    "express": "^4.18.2",
+    "ws": "^8.13.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
   }
 }
