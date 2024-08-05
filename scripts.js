@@ -411,6 +411,7 @@ document.addEventListener("DOMContentLoaded", () => {
         "BR",
         "CI",
         "PU",
+        "LX",
       ].includes(airline)
     ) {
       fareDifference = newFareAmount - oldFareAmount;
@@ -438,47 +439,19 @@ document.addEventListener("DOMContentLoaded", () => {
           2
         )}${taxType} - Old TAX ${oldTaxAmount.toFixed(2)}${taxType}<br>`;
       });
-
-      totalFareDifference = fareDifference + taxDifference;
-      yqyrTax = "";
-    } else if (["QR", "RJ", "SK", "SV", "TK", "VA", "WS"].includes(airline)) {
-      const yqyrOld = oldFareString.match(/(\d+\.\d+)(YQ|YR)/g);
-      const yqyrNew = newFareString.match(/(\d+\.\d+)(YQ|YR)/g);
-
-      let yqyrOldSum = 0;
-      let yqyrNewSum = 0;
-
+      let yqyrOld = 0;
       if (yqyrOld) {
         yqyrOld.forEach((tax) => {
           yqyrOldSum += parseFloat(tax.match(/(\d+\.\d+)/)[0]);
         });
       }
 
-      if (yqyrNew) {
-        yqyrNew.forEach((tax) => {
-          yqyrNewSum += parseFloat(tax.match(/(\d+\.\d+)/)[0]);
-        });
-      }
-
-      if (yqyrOldSum < 50 && yqyrNewSum < 50) {
-        fareDifference = newFareAmount - oldFareAmount;
-        taxDifference =
-          newTotalFareAmount -
-          newFareAmount -
-          (oldTotalFareAmount - oldFareAmount);
-        totalFareDifference = fareDifference + taxDifference;
-        yqyrTax = "";
-        taxCalculationDetails = "";
+      if (taxDifference < 0) {
+        totalFareDifference = fareDifference;
       } else {
-        fareDifference = newFareAmount - oldFareAmount;
-        taxDifference =
-          newTotalFareAmount -
-          newFareAmount -
-          (oldTotalFareAmount - oldFareAmount);
-        totalFareDifference = fareDifference + taxDifference - yqyrNewSum;
-        yqyrTax = `YQ/YR Adjustment: -${yqyrNewSum.toFixed(2)}`;
-        taxCalculationDetails = "";
+        totalFareDifference = fareDifference + taxDifference;
       }
+      yqyrTax = "";
     } else {
       fareDifference = newFareAmount - oldFareAmount;
       taxDifference =
