@@ -1,1 +1,1 @@
-web: gunicorn fare_difference_and_tax_calculator:app
+web: gunicorn app:create_app()

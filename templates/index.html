@@ -66,6 +66,19 @@
         gap: 0.8rem;
     }
 
+    #error-message {
+  color:rgb(182, 13, 44);          /* typical error red */
+  background-color:rgb(230, 206, 203);
+  border: 1px solidrgb(90, 0, 17);
+  padding: 10px;
+  margin: 10px 0;
+  font-weight: bold;
+  font-family: Arial, sans-serif;
+  border-radius: 4px;
+  max-width: 400px;
+    text-align: center;
+    white-space: pre-wrap}
+
     h2 {
         margin-bottom: 1rem;
         font-size: 1.3rem;
@@ -186,6 +199,10 @@ filter: blur(8px); /* 👈 This adds the blur */
         <div class="section">
             <h2>Fare Difference</h2>
             <div id="fare-result" class="result-box">Results will appear here.</div>
+            <div id="error-message" style="display:none; color:red;"></div>
+            <button id="ignore-button" style="display: none; margin-top: 10px;">Ignore and Continue</button>
+
+
         </div>
 
 
@@ -206,33 +223,73 @@ document.getElementById("taxRefundResult").textContent = "Refundable Taxes: " + 
         });
 
         // Fare Difference Calculator
-        document.getElementById("fare-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const airline = document.getElementById("airline-code").value;
-            const oldTicket = document.getElementById("old-ticket").value;
-            const newTicket = document.getElementById("new-ticket").value;
+document.getElementById("fare-form").addEventListener("submit", async function(e) {
+    e.preventDefault();
 
-            const response = await fetch("/", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    airline_code: airline,
-                    old_ticket: oldTicket,
-                    new_ticket: newTicket
-                })
+    const airline = document.getElementById("airline-code").value.trim();
+    const oldTicket = document.getElementById("old-ticket").value.trim();
+    const newTicket = document.getElementById("new-ticket").value.trim();
+
+    const errorDiv = document.getElementById("error-message");
+    const resultDiv = document.getElementById("fare-result");
+    const ignoreButton = document.getElementById("ignore-button");
+
+        // Clear existing messages and hide ignore button
+        errorDiv.textContent = "";
+        errorDiv.style.display = "none";
+        resultDiv.textContent = "";
+        resultDiv.style.display = "none";
+        ignoreButton.style.display = "none";
+
+        // Main submission
+        await submitFareCalculation(newTicket, oldTicket, airline, false);
             });
 
-            const data = await response.json();
-            if (data.result) {
-                document.getElementById("fare-result").innerText =
-                    `Fare Difference: ${data.result.fare_difference}\n` +
-                    `Tax Difference: ${data.result.tax_difference}\n` +
-                    `Total Difference: ${data.result.total_difference}\n\n` +
-                    `Breakdown:\n${data.result.tax_breakdown || "None"}`;
-            } else {
-                document.getElementById("fare-result").innerText = "Something went wrong.";
-            }
+            // Ignore and continue button logic
+    document.getElementById("ignore-button").addEventListener("click", async function () {
+        const airline = document.getElementById("airline-code").value;
+        const oldTicket = document.getElementById("old-ticket").value;
+        const newTicket = document.getElementById("new-ticket").value;
+
+        await submitFareCalculation(newTicket, oldTicket, airline, true);
+    });
+
+    async function submitFareCalculation(newTicket, oldTicket, airlineCode, ignoreError = false) {
+
+            const response = await fetch("/", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                new_ticket: newTicket,
+                old_ticket: oldTicket,
+                airline_code: airlineCode,
+                ignore_currency_error: ignoreError
+            })
         });
+
+        const data = await response.json();
+        const errorDiv = document.getElementById("error-message");
+        const resultDiv = document.getElementById("fare-result");
+        const ignoreButton = document.getElementById("ignore-button");
+
+        if (data.error) {
+            errorDiv.textContent = data.error;
+            errorDiv.style.display = "block";
+            resultDiv.style.display = "none";
+            ignoreButton.style.display = "inline-block"; // show the ignore button
+        } else if (data.result) {
+            errorDiv.style.display = "none";
+            ignoreButton.style.display = "none";
+            resultDiv.style.display = "block";
+            resultDiv.innerText =
+                `Fare Difference: ${data.result.fare_difference}\n` +
+                `Tax Difference: ${data.result.tax_difference}\n` +
+                `Total Difference: ${data.result.total_difference}\n\n` +
+                `Breakdown:\n${data.result.tax_breakdown || "None"}`;
+        }
+    }
+
+
 
   const video = document.getElementById("background-video");
 
